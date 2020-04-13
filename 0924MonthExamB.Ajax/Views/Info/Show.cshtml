@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewBag.Title = "Show";
+}
+
+<h2>待审核申请</h2>
+<table>
+    <tr>
+        <td>资料名称：<input id="name" type="text" name="name"/></td>
+        <td>机密等级：<select id="Select1"></select></td>
+        <td>申请人：<input id="people" type="text" name="people"/></td>
+        <td><input  type="submit" value="查找"  class="btn btn-danger" onclick="show()"/>
+            <input  type="button" value="添加" class="btn btn-info"  onclick="location.href = '/Info/Add';"/></td>
+    </tr>
+</table>
+<table class="table table-bordered;table table-striped">
+    <thead>
+        <tr>
+            <th>编号</th>
+            <th>资料名称</th>
+            <th>资料描述</th>
+            <th>机密等级</th>
+            <th>资料份数</th>
+            <th>申请人</th>
+            <th>申请时间</th>
+            <th>操作 </th>
+        </tr>
+    </thead>
+
+    <tbody id="tb"></tbody>
+</table>
+@section scripts{
+    <script>
+        $(function () {
+            bansel();
+        })
+    function bansel() {
+        $.ajax({
+            url: 'http://localhost:50655/api/File',
+            type: 'get',
+            dataType: 'json',
+            success: function (d) {
+                $("#Select1").empty();
+                $("#Select1").append("<option value=''>==请选择==</option>");
+                $(d).each(function () {
+                    var opt = '<option value=' + this.Fid + '>' + this.FName + '</option>';
+                    $("#Select1").append(opt);
+                })
+                show();
+            }
+        })
+    }
+    function show() {
+        $.ajax({
+            url: 'http://localhost:50655/api/Info',
+            type: 'get',
+            dataType: 'json',
+            data: {fid:$("#Select1").val(), name:$("#name").val(),people: $("#people").val()},
+            success: function (d) {
+                $("#tb").empty();
+                $(d).each(function () {
+                    var line = '<tr>'
+                        + '<td>' + this.Iid          + '</td>'
+                        + '<td>' + this.Name         + '</td>'
+                        + '<td>' + this.Ms + '</td>'
+                        + '<td>' + this.Files.FName + '</td>'
+                        + '<td>' + this.Number       + '</td>'
+                        + '<td>' + this.People       + '</td>'
+                        + '<td>' + this.Time + '</td>'
+                        + '<td>'
+                        + '<a onclick=Del(' + this.Iid + ')>删除</a> '
+                        +'<a href=/Info/Upt/'+ this.Iid +'>修改</a >'
+                        + '</td>'
+                        + '</tr>'
+                    $("#tb").append(line);
+                })
+            }
+        })
+    }
+    function Del(id) {
+        $.ajax({
+            url: 'http://localhost:50655/api/Info/' + id,
+            type: 'delete',
+            success: function (d) {
+                alert('删除成功！');
+                location.href = '/Info/Show';
+            }
+        })
+    }
+
+    </script>
+    }
+

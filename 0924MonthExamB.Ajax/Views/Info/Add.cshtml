@@ -1,0 +1,95 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+}
+
+<h2>待审核申请-添加</h2>
+<table class="table table-bordered">
+    <tr>
+        <td>资料名称：</td>
+        <td>
+            <input id="name" type="text" />
+        </td>
+    </tr>
+    <tr>
+        <td>资料描述：</td>
+        <td>
+            <input id="ms" type="text" />
+        </td>
+    </tr>
+    <tr>
+        <td>机密等级：</td>
+        <td>
+            <select id="Select1"></select>
+        </td>
+    </tr>
+    <tr>
+        <td>资料份数：</td>
+        <td>
+            <input id="number" type="text" />
+        </td>
+    </tr>
+    <tr>
+        <td>申请人：</td>
+        <td>
+            <input id="people" type="text" />
+        </td>
+    </tr>
+    <tr>
+        <td>申请时间：</td>
+        <td>
+            <input id="time" type="text" />
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            <input id="Submit1" type="button" value="保存" onclick="Add()" />
+            <input id="Button1" type="button" value="返回" onclick="location.href=/Info/Show" />
+        </td>
+    </tr>
+
+</table>
+@section scripts{
+    <script>
+    $(function () {
+        bansel();
+    })
+    function bansel() {
+        $.ajax({
+            url: 'http://localhost:50655/api/File',
+            type: 'get',
+            dataType: 'json',
+            success: function (d) {
+                $("#Select1").empty();
+                $("#Select1").append("<option value=''>==请选择==</option>");
+                $(d).each(function () {
+                    var opt = '<option value=' + this.Fid + '>' + this.FName + '</option>';
+                    $("#Select1").append(opt);
+                })
+            }
+        })
+    }
+    function Add() {
+        var obj = {};
+        obj.Name = $("#name").val();
+        obj.Ms = $("#ms").val();
+        obj.FileModelFid = $("#Select1").val();
+        obj.Number=$("#number").val();
+        obj.People=$("#people").val();
+        obj.Time = $("#time").val();
+
+        $.ajax({
+            url: 'http://localhost:50655/api/Info',
+            type: 'post',
+            dataType: 'json',
+            data: obj,
+            success: function (d) {
+                alert("添加成功");
+                location.href = '/Info/Show';
+            }
+        })
+    }
+    </script>
+    }
+
